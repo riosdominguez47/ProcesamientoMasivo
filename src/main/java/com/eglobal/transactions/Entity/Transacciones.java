@@ -21,9 +21,7 @@ public class Transacciones {
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	    @Column(name = "transaccion_id")
 	    private Long transaccionId;
-
-	    // Relación Many-to-One con la tabla control_lotes
-	    // ON DELETE CASCADE se suele manejar a nivel de base de datos, pero se añade cascade opcional en JPA
+	 
 	    @ManyToOne(fetch = FetchType.LAZY)
 	    @JoinColumn(name = "lote_id", nullable = false)
 	    private ControlLotes lote;
@@ -33,12 +31,10 @@ public class Transacciones {
 
 	    @Column(name = "cuenta_destino", nullable = false, length = 50)
 	    private String cuentaDestino;
-
-	    // NUMERIC(15,2) se mapea idealmente con BigDecimal para evitar pérdida de precisión
+	    
 	    @Column(name = "monto", nullable = false, precision = 15, scale = 2)
 	    private BigDecimal monto;
 
-	    // TIMESTAMP WITH TIME ZONE se mapea mejor con OffsetDateTime o ZonedDateTime
 	    @Column(name = "fecha_transaccion", nullable = false)
 	    private LocalDateTime fechaTransaccion;
 

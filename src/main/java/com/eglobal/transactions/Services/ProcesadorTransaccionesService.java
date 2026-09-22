@@ -39,11 +39,13 @@ public class ProcesadorTransaccionesService {
 		ControlLotes lote = new ControlLotes();
 		lote.setNombreArchivo(nombreArchivo);
 		lote.setEstado("PROCESANDO");
+		
 		lote = loteRepository.save(lote);
 
 		int BATCH_SIZE = 1000;
 		int numeroLinea = 0;
-
+		int contadorExitosos = 0;
+		int contadorFallidos = 0;
 		List<Transacciones> loteTransacciones = new ArrayList<>();
 		List<DetalleErrores> loteErrores = new ArrayList<>();
 
@@ -57,6 +59,7 @@ public class ProcesadorTransaccionesService {
 
 					Transacciones transaccion = mapearLineaATransaccion(linea, lote);
 					loteTransacciones.add(transaccion);
+					contadorExitosos++;
 				} catch (Exception e) {
 
 					DetalleErrores error = new DetalleErrores();
@@ -65,6 +68,7 @@ public class ProcesadorTransaccionesService {
 					error.setRegistroFallo(linea);
 					error.setMotivoError(e.getMessage() != null ? e.getMessage() : "Error de formato");
 					loteErrores.add(error);
+					contadorFallidos++; 
 				}
 
 				// Persistencia eficiente por bloques (Batching)
@@ -75,7 +79,9 @@ public class ProcesadorTransaccionesService {
 
 			persistirEnLote(loteTransacciones, loteErrores);
 
-			// 5. Actualizar estado final del lote
+			lote.setTotalRegistros(numeroLinea-1); 
+			lote.setExitosos(contadorExitosos);
+			lote.setFallidos(contadorFallidos);
 			lote.setEstado(loteErrores.isEmpty() ? "COMPLETADO" : "COMPLETADO_CON_ERRORES");
 			loteRepository.save(lote);
 
@@ -87,20 +93,20 @@ public class ProcesadorTransaccionesService {
 	}
 
 	private void persistirEnLote(List<Transacciones> transacciones, List<DetalleErrores> errores) {
-		// Guardar transacciones válidas
+		
 		for (Transacciones t : transacciones) {
 			entityManager.persist(t);
 		}
-		// Guardar errores encontrados
+		
 		for (DetalleErrores e : errores) {
 			entityManager.persist(e);
 		}
 
-		// Sincroniza con la base de datos enviando el Batch y limpia la memoria RAM
+		
 		entityManager.flush();
 		entityManager.clear();
 
-		// Limpiar las listas de la memoria intermedia
+		
 		transacciones.clear();
 		errores.clear();
 	}
@@ -116,7 +122,7 @@ public class ProcesadorTransaccionesService {
 		t.setLote(lote);
 		t.setCuentaOrigen(columnas[1].trim());
 		t.setCuentaDestino(columnas[2].trim());
-		System.out.println(columnas[3].trim());
+		
 		// Validación de reglas de negocio (Tolerancia a fallos)
 		BigDecimal monto = new BigDecimal(columnas[3].trim());
 		if (monto.compareTo(BigDecimal.ZERO) <= 0) {
@@ -126,10 +132,10 @@ public class ProcesadorTransaccionesService {
 
 		 String textoFecha = columnas[4].trim();
 	        
-	     // Define el patrón exacto que coincide con tu texto
+	
 	     DateTimeFormatter formateador = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 	     
-	    // Realiza el parseo a LocalDateTime
+	    
 	    LocalDateTime fechaHora = LocalDateTime.parse(textoFecha, formateador);
 		t.setFechaTransaccion(fechaHora); // ISO-8601 recomendado
 		t.setTipoOperacion(columnas[4].trim());

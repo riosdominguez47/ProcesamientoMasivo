@@ -19,7 +19,7 @@ public class TransactionsController {
 		this.procesadorService = procesadorService;
 	}
 
-	@PostMapping("/procesar-archivo")
+	@PostMapping("/procesarTransacciones")
 	public ResponseEntity<String> cargarArchivo(@RequestParam("archivo") MultipartFile archivo) {
 		if (archivo.isEmpty()) {
 			return ResponseEntity.badRequest().body("El archivo está vacío.");
