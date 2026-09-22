@@ -137,7 +137,7 @@ public class ProcesadorTransaccionesService {
 	     
 	    
 	    LocalDateTime fechaHora = LocalDateTime.parse(textoFecha, formateador);
-		t.setFechaTransaccion(fechaHora); // ISO-8601 recomendado
+		t.setFechaTransaccion(fechaHora); 
 		t.setTipoOperacion(columnas[4].trim());
 
 		if (columnas.length > 5) {
