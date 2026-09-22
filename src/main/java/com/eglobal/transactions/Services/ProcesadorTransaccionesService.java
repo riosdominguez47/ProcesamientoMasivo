@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -56,9 +57,10 @@ public class ProcesadorTransaccionesService {
 				numeroLinea++;
 
 				try {
-
+					LocalDateTime fechaIni = LocalDateTime.now();
 					Transacciones transaccion = mapearLineaATransaccion(linea, lote);
 					loteTransacciones.add(transaccion);
+					lote.setFechaInicio(fechaIni);
 					contadorExitosos++;
 				} catch (Exception e) {
 
@@ -76,12 +78,13 @@ public class ProcesadorTransaccionesService {
 					persistirEnLote(loteTransacciones, loteErrores);
 				}
 			}
-
+			LocalDateTime fechaActual = LocalDateTime.now();
 			persistirEnLote(loteTransacciones, loteErrores);
 
 			lote.setTotalRegistros(numeroLinea-1); 
 			lote.setExitosos(contadorExitosos);
 			lote.setFallidos(contadorFallidos);
+			lote.setFechaFin(fechaActual);
 			lote.setEstado(loteErrores.isEmpty() ? "COMPLETADO" : "COMPLETADO_CON_ERRORES");
 			loteRepository.save(lote);
 

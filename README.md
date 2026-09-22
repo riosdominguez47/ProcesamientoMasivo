@@ -15,3 +15,5 @@ Explicación breve de la estrategia usada para evitar que el proceso falle ante 
 
 		Se realizo manejo de exepciones para poder para obtener los errores en tiempo de ejecucion y con  esto evitar tronar el API
 		
+		Nota: favor de cambiar las credenciales de acceso en archivo properties para el acceso a la base de datos.
+		

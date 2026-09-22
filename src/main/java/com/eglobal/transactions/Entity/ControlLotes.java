@@ -1,5 +1,6 @@
 package com.eglobal.transactions.Entity;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -35,10 +36,10 @@ public class ControlLotes {
 	private Integer fallidos = 0;
 
 	@Column(name = "fecha_inicio")
-	private OffsetDateTime fechaInicio;
+	private LocalDateTime fechaInicio;
 
 	@Column(name = "fecha_fin")
-	private OffsetDateTime fechaFin;
+	private LocalDateTime fechaFin;
 
 	@Column(name = "estado", nullable = false, length = 50)
 	private String estado = "PROCESANDO";
@@ -83,19 +84,19 @@ public class ControlLotes {
 		this.fallidos = fallidos;
 	}
 
-	public OffsetDateTime getFechaInicio() {
+	public LocalDateTime getFechaInicio() {
 		return fechaInicio;
 	}
 
-	public void setFechaInicio(OffsetDateTime fechaInicio) {
+	public void setFechaInicio(LocalDateTime fechaInicio) {
 		this.fechaInicio = fechaInicio;
 	}
 
-	public OffsetDateTime getFechaFin() {
+	public LocalDateTime getFechaFin() {
 		return fechaFin;
 	}
 
-	public void setFechaFin(OffsetDateTime fechaFin) {
+	public void setFechaFin(LocalDateTime fechaFin) {
 		this.fechaFin = fechaFin;
 	}
 
